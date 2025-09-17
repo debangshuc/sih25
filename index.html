@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sentinel AI: Predictive Geotechnical Analytics</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Three.js for 3D graphics -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    
+    <!-- Chart.js for data visualization -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Custom Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://api.fontshare.com/v2/css?f[]=clash-grotesk@400,500,600,700&display=swap" rel="stylesheet">
+
+    <style>
+        /* Define the color palette and custom styles */
+        :root {
+            --bg-deep-mine: #1F1B24;
+            --bg-rock: #2b2d3b;
+            --accent-blue: #2979FF;
+            --accent-purple: #8A3AFF;
+            --text-primary: #E5E6E6;
+            --text-secondary: #a0aec0;
+            --border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Use custom fonts */
+        body {
+            background-color: var(--bg-deep-mine);
+            color: var(--text-primary);
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+        }
+
+        h1, h2, h3, h4 {
+            font-family: 'Clash Grotesk', sans-serif;
+            font-weight: 600;
+        }
+
+        /* Gradient Text Effect */
+        .gradient-text {
+            background: linear-gradient(90deg, var(--accent-purple), var(--accent-blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Glassmorphism effect */
+        .glassmorphism {
+            background: rgba(43, 45, 59, 0.4);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease-in-out;
+        }
+        .glassmorphism:hover {
+            border-color: var(--accent-blue);
+            transform: translateY(-5px);
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg-deep-mine); }
+        ::-webkit-scrollbar-thumb { background: var(--accent-blue); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--accent-purple); }
+
+        /* Glow effect for CTA button */
+        .glow-on-hover {
+            position: relative;
+            z-index: 0;
+        }
+        .glow-on-hover:before {
+            content: '';
+            background: linear-gradient(45deg, #ff0000, #ff7300, #fffb00, #48ff00, #00ffd5, #002bff, #7a00ff, #ff00c8, #ff0000);
+            position: absolute;
+            top: -2px; left:-2px;
+            background-size: 400%;
+            z-index: -1;
+            filter: blur(5px);
+            width: calc(100% + 4px);
+            height: calc(100% + 4px);
+            animation: glowing 20s linear infinite;
+            opacity: 0;
+            transition: opacity .3s ease-in-out;
+            border-radius: 10px;
+        }
+        .glow-on-hover:hover:before { opacity: 1; }
+        @keyframes glowing {
+            0% { background-position: 0 0; }
+            50% { background-position: 400% 0; }
+            100% { background-position: 0 0; }
+        }
+
+        /* Animation for sections fading in on scroll */
+        .fade-in-section {
+            opacity: 0;
+            transform: translateY(25px);
+            transition: opacity 0.7s ease-out, transform 0.7s ease-out;
+        }
+        .fade-in-section.is-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* SVG line animation */
+        .connecting-line {
+            stroke-dasharray: 1000;
+            stroke-dashoffset: 1000;
+            animation: draw-line 2s 0.5s ease-in-out forwards;
+        }
+        @keyframes draw-line { to { stroke-dashoffset: 0; } }
+
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Hero Section -->
+    <header class="relative h-screen flex items-center justify-center text-center overflow-hidden">
+        <div id="hero-canvas-container" class="absolute top-0 left-0 w-full h-full z-0"></div>
+        <div class="relative z-10 p-4">
+            <h1 class="text-5xl md:text-7xl font-bold uppercase tracking-wider leading-tight">
+                ResQTech
+            </h1>
+            <p class="mt-4 text-2xl md:text-4xl max-w-4xl mx-auto font-semibold">
+                Shifting the Paradigm from Reactive Monitoring to <span class="gradient-text">Predictive Safety</span>
+            </p>
+            <p class="mt-6 text-lg md:text-xl max-w-3xl mx-auto text-gray-300">
+                Leveraging next-generation AI to analyze complex geotechnical data, providing actionable warnings for rockfalls in open-pit mines hours or even days before they happen.
+            </p>
+            <a href="#challenge" class="glow-on-hover inline-block mt-8 px-8 py-3 rounded-lg text-lg font-semibold bg-blue-600 hover:bg-blue-700 transition-colors duration-300">
+                Discover the Future of Mine Safety
+            </a>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-6 py-12 md:py-24">
+
+        <!-- The Challenge Section -->
+        <section id="challenge" class="fade-in-section min-h-[80vh] flex items-center">
+            <div class="grid lg:grid-cols-2 gap-12 items-center">
+                <div>
+                    <h2 class="text-4xl md:text-5xl font-bold mb-6">The High Cost of Hindsight</h2>
+                    <p class="text-lg text-gray-300 leading-relaxed mb-8">
+                        Traditional slope stability monitoring is a constant battle against overwhelming data, environmental challenges, and the unpredictable nature of geological failures. Current methods are fundamentally reactive, catching problems only as they escalate and providing analysis after a failure, not the critical warning needed to save lives.
+                    </p>
+                    <div class="space-y-6">
+                         <div class="p-4 glassmorphism rounded-lg border-l-4 border-yellow-400">
+                            <h3 class="text-2xl font-bold">Traditional methods are <span class="text-yellow-400">post-event</span>, analyzing failures only after they happen.</h3>
+                        </div>
+                        <div class="p-4 glassmorphism rounded-lg border-l-4 border-red-400">
+                           <h3 class="text-2xl font-bold">Monitoring systems often fail due to <span class="text-red-400">human error</span>, not technology.</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div class="glassmorphism p-6 rounded-xl h-full">
+                        <h4 class="text-xl font-bold mb-2">Data Overload</h4>
+                        <p class="text-gray-400">Millions of data points create noise, making it nearly impossible for humans to spot subtle, critical precursor trends.</p>
+                    </div>
+                    <div class="glassmorphism p-6 rounded-xl h-full">
+                        <h4 class="text-xl font-bold mb-2">Sensor Degradation</h4>
+                        <p class="text-gray-400">Harsh environments (dust, rain) degrade sensor accuracy, leading to missed data or false positives.</p>
+                    </div>
+                     <div class="glassmorphism p-6 rounded-xl h-full">
+                        <h4 class="text-xl font-bold mb-2">The "Human Factor"</h4>
+                        <p class="text-gray-400">Failures are often due to interpretation errors or delayed responses. Automation is key.</p>
+                    </div>
+                    <div class="glassmorphism p-6 rounded-xl h-full">
+                        <h4 class="text-xl font-bold mb-2">Reactive Alarms</h4>
+                        <p class="text-gray-400">Threshold-based alarms trigger too late to safely evacuate personnel and equipment.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- The Solution Section -->
+        <section id="solution" class="fade-in-section text-center my-24 md:my-32">
+            <h2 class="text-4xl md:text-5xl font-bold">From Reactive to Predictive</h2>
+            <p class="max-w-3xl mx-auto mt-6 text-lg text-gray-300">
+                Sentinel AI shifts the paradigm. Our system utilizes advanced machine learning to analyze multi-source data in real-time, identifying complex, non-linear patterns and precursor signals that are invisible to human analysis or simple threshold-based alarms.
+            </p>
+            <div class="mt-12 overflow-x-auto">
+                <table class="w-full max-w-5xl mx-auto text-left border-collapse">
+                    <thead>
+                        <tr>
+                            <th class="p-4 border-b border-gray-700 text-lg">Feature</th>
+                            <th class="p-4 border-b border-gray-700 text-lg text-center">Traditional Monitoring</th>
+                            <th class="p-4 border-b border-gray-700 text-lg text-center bg-blue-900/30 rounded-t-lg">Sentinel AI</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="border-b border-gray-800">
+                            <td class="p-4 font-semibold">Timing</td>
+                            <td class="p-4 text-center text-yellow-400">Reactive (Post-Event Analysis)</td>
+                            <td class="p-4 text-center font-bold text-green-400 bg-blue-900/20">Predictive (Pre-Event Warning)</td>
+                        </tr>
+                        <tr class="border-b border-gray-800">
+                            <td class="p-4 font-semibold">Data Analysis</td>
+                            <td class="p-4 text-center text-gray-400">Manual / Threshold-Based</td>
+                            <td class="p-4 text-center font-bold text-blue-300 bg-blue-900/20">AI-Powered Pattern Recognition</td>
+                        </tr>
+                        <tr class="border-b border-gray-800">
+                            <td class="p-4 font-semibold">Warning Time</td>
+                            <td class="p-4 text-center text-red-400">Minimal to None</td>
+                            <td class="p-4 text-center font-bold text-green-400 bg-blue-900/20">Actionable Lead Time (Hours to Days)</td>
+                        </tr>
+                        <tr>
+                            <td class="p-4 font-semibold">Data Sources</td>
+                            <td class="p-4 text-center text-gray-400">Often Siloed (e.g., LiDAR only)</td>
+                            <td class="p-4 text-center font-bold text-purple-300 bg-blue-900/20 rounded-b-lg">Multi-Sensor Fusion</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- How It Works Infographic -->
+        <section id="how-it-works" class="fade-in-section my-24 md:my-32">
+            <h2 class="text-4xl md:text-5xl font-bold text-center mb-16">How It Works: From Data to Decision</h2>
+            <div class="relative hidden md:flex items-center justify-between">
+                <svg class="absolute top-1/2 left-0 w-full h-1 -translate-y-1/2" preserveAspectRatio="none">
+                    <path class="connecting-line" d="M0 0.5 H 10000" stroke="url(#line-gradient)" stroke-width="2" fill="none"/>
+                    <defs>
+                        <linearGradient id="line-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" style="stop-color:var(--accent-purple);" />
+                            <stop offset="100%" style="stop-color:var(--accent-blue);" />
+                        </linearGradient>
+                    </defs>
+                </svg>
+            </div>
+            <div class="grid md:grid-cols-4 gap-8 relative">
+                <!-- Stage 1 -->
+                <div class="glassmorphism p-6 rounded-xl text-center z-10 hover:border-purple-500 hover:-translate-y-2">
+                    <h3 class="text-xl font-bold mb-2">1. Multi-Modal Data Ingestion</h3>
+                    <p class="text-gray-400 text-sm">Aggregates data from Ground-Based Radar, LiDAR, Piezometers, Extensometers, and environmental sensors.</p>
+                </div>
+                <!-- Stage 2 -->
+                <div class="glassmorphism p-6 rounded-xl text-center z-10 hover:border-purple-500 hover:-translate-y-2">
+                    <h3 class="text-xl font-bold mb-2">2. AI-Powered Data Fusion</h3>
+                    <p class="text-gray-400 text-sm">Our core models process and fuse data, identifying complex non-linear correlations invisible to the human eye.</p>
+                </div>
+                <!-- Stage 3 -->
+                <div class="glassmorphism p-6 rounded-xl text-center z-10 hover:border-blue-500 hover:-translate-y-2">
+                    <h3 class="text-xl font-bold mb-2">3. Predictive Failure Modeling</h3>
+                    <p class="text-gray-400 text-sm">Calculates the probability of different failure types by recognizing subtle, pre-cursor signatures in the data stream.</p>
+                </div>
+                <!-- Stage 4 -->
+                <div class="glassmorphism p-6 rounded-xl text-center z-10 hover:border-blue-500 hover:-translate-y-2">
+                    <h3 class="text-xl font-bold mb-2">4. Actionable, Tiered Alerting</h3>
+                    <p class="text-gray-400 text-sm">Issues clear alerts (e.g., 'Watch', 'High', 'Critical') to dashboards and mobile devices, integrating with your mine's TARP.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Dashboard Preview & Analytics -->
+        <section id="dashboard" class="fade-in-section my-24 md:my-32">
+             <h2 class="text-4xl md:text-5xl font-bold text-center mb-4">Visualizing the Invisible Threat</h2>
+             <p class="max-w-3xl mx-auto text-center mt-4 text-lg text-gray-300 mb-12">
+                Our dashboard provides an unparalleled, real-time view of your mine's geotechnical health, moving beyond raw data to deliver intuitive and predictive insights.
+            </p>
+             <div class="glassmorphism p-4 md:p-8 rounded-2xl w-full max-w-6xl mx-auto border-0">
+                <div class="grid lg:grid-cols-5 gap-6">
+                    <!-- Main Chart -->
+                    <div class="lg:col-span-3 p-4 rounded-lg bg-black/20">
+                        <h3 class="text-xl font-semibold mb-4">Deformation Velocity Trend (West Wall)</h3>
+                        <canvas id="deformationChart"></canvas>
+                    </div>
+                    <!-- Side Panels -->
+                    <div class="lg:col-span-2 space-y-6">
+                         <div class="p-4 rounded-lg bg-black/20">
+                             <h3 class="text-xl font-semibold">Active Alerts</h3>
+                            <div class="p-3 mt-2 rounded-md bg-red-900/50 border border-red-500">
+                                <p class="font-bold">CRITICAL: West Wall, Bench 12</p>
+                                <p class="text-sm text-red-200">High probability of wedge failure.</p>
+                            </div>
+                            <div class="p-3 mt-2 rounded-md bg-yellow-900/50 border border-yellow-500">
+                                <p class="font-bold">HIGH: East Face, Bench 8</p>
+                                <p class="text-sm text-yellow-200">Accelerated displacement detected.</p>
+                            </div>
+                         </div>
+                         <div class="p-4 rounded-lg bg-black/20">
+                            <h3 class="text-xl font-semibold mb-4">Predictive Model Accuracy</h3>
+                            <canvas id="accuracyChart"></canvas>
+                         </div>
+                    </div>
+                </div>
+             </div>
+        </section>
+        
+        <!-- Case Study Section -->
+        <section id="case-study" class="fade-in-section my-24 md:my-32">
+            <div class="glassmorphism rounded-2xl p-8 md:p-12 border-0">
+                <div class="grid lg:grid-cols-3 gap-8 items-center">
+                    <div class="lg:col-span-1 text-center lg:text-left">
+                        <h2 class="text-4xl font-bold">Case Study: The North Wall Incident</h2>
+                        <p class="text-lg text-gray-400 mt-2">Averted Disaster at Mine Site Alpha</p>
+                    </div>
+                    <div class="lg:col-span-2">
+                        <p class="text-lg text-gray-200">
+                            At a major copper mine, traditional monitoring showed minor displacement on the North Wall. However, Sentinel AI, running in a pilot program, flagged a <strong class="text-yellow-400">78% probability of a significant wedge failure within 48 hours</strong>. The model had detected a subtle correlation between rising pore water pressure and micro-accelerations invisible in the raw radar data.
+                        </p>
+                        <p class="mt-4 text-lg font-bold gradient-text">
+                            The mine enacted its TARP based on our prediction. 36 hours later, a 20,000 cubic meter rockfall occurred. All personnel and equipment had been cleared, preventing fatalities and saving an estimated $12M.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Technology Stack -->
+        <section id="tech-stack" class="fade-in-section my-24 md:my-32">
+            <h2 class="text-3xl md:text-4xl font-bold text-center mb-12">Built on Proven, Scalable Technology</h2>
+            <div class="flex flex-wrap items-center justify-center gap-x-12 gap-y-8">
+                <span class="text-2xl font-semibold text-gray-400">Python</span>
+                <span class="text-2xl font-semibold text-gray-400">TensorFlow</span>
+                <span class="text-2xl font-semibold text-gray-400">PyTorch</span>
+                <span class="text-2xl font-semibold text-gray-400">React.js</span>
+                <span class="text-2xl font-semibold text-gray-400">Flutter</span>
+                <span class="text-2xl font-semibold text-gray-400">AWS</span>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="fade-in-section border-t border-gray-800">
+        <div class="container mx-auto px-6 py-12 text-center">
+            <h2 class="text-4xl md:text-5xl font-bold">Revolutionize Your Mine's Safety Protocol</h2>
+            <p class="mt-4 max-w-2xl mx-auto text-lg text-gray-300">
+                Don't wait for the next failure. Partner with Sentinel AI to move from reactive monitoring to predictive safety.
+            </p>
+            <a href="mailto:restartsoul.11@gmail.com" class="inline-block mt-8 px-8 py-3 rounded-lg text-lg font-semibold bg-purple-600 hover:bg-purple-700 transition-colors duration-300">
+                Build Safer Mines Today
+            </a>
+            <p class="mt-12 text-gray-500">&copy; 2025 Sentinel AI. A Conceptual Project for SIH.</p>
+        </div>
+    </footer>
+
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+
+        // --- Hero Section 3D Animation ---
+        const container = document.getElementById('hero-canvas-container');
+        if (container) {
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 1000);
+            const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+
+            renderer.setSize(container.clientWidth, container.clientHeight);
+            container.appendChild(renderer.domElement);
+
+            // Create a representation of a mine pit
+            const geometry = new THREE.PlaneGeometry(10, 10, 50, 50);
+            const material = new THREE.MeshStandardMaterial({
+                color: 0x2b2d3b,
+                wireframe: true,
+                metalness: 0.5,
+                roughness: 0.8
+            });
+            const plane = new THREE.Mesh(geometry, material);
+            plane.rotation.x = -Math.PI / 2.2;
+
+            // Add some "terrain"
+            const vertices = plane.geometry.attributes.position.array;
+            for (let i = 2; i < vertices.length; i += 3) {
+                vertices[i] = Math.random() * 0.5 - 0.25;
+            }
+            plane.geometry.attributes.position.needsUpdate = true;
+            scene.add(plane);
+
+            // Create particle system
+            const particlesGeometry = new THREE.BufferGeometry();
+            const particlesCnt = 5000;
+            const posArray = new Float32Array(particlesCnt * 3);
+            for(let i = 0; i < particlesCnt * 3; i++) {
+                posArray[i] = (Math.random() - 0.5) * 15;
+            }
+            particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+            const particlesMaterial = new THREE.PointsMaterial({
+                size: 0.015,
+                color: 0x8A3AFF
+            });
+            const particleMesh = new THREE.Points(particlesGeometry, particlesMaterial);
+            scene.add(particleMesh);
+
+            // Lighting
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.2);
+            scene.add(ambientLight);
+            const directionalLight = new THREE.DirectionalLight(0x2979FF, 1);
+            directionalLight.position.set(5, 5, 5);
+            scene.add(directionalLight);
+
+            camera.position.z = 5;
+            camera.position.y = 2;
+
+            function animate() {
+                requestAnimationFrame(animate);
+                plane.rotation.z += 0.0005;
+                particleMesh.rotation.y += 0.0003;
+                renderer.render(scene, camera);
+            }
+            animate();
+
+            window.addEventListener('resize', () => {
+                camera.aspect = container.clientWidth / container.clientHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(container.clientWidth, container.clientHeight);
+            });
+        }
+
+        // --- Animate Sections on Scroll ---
+        const sections = document.querySelectorAll('.fade-in-section');
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('is-visible');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.1 });
+        sections.forEach(section => observer.observe(section));
+
+        // --- Chart.js Implementations ---
+        const chartFontColor = 'rgba(229, 230, 230, 0.8)';
+        const chartGridColor = 'rgba(255, 255, 255, 0.1)';
+        
+        Chart.defaults.font.family = "'Inter', sans-serif";
+
+        // Deformation Velocity Chart
+        const defCtx = document.getElementById('deformationChart');
+        if (defCtx) {
+            new Chart(defCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Day -6', 'Day -5', 'Day -4', 'Day -3', 'Day -2', 'Day -1', 'Today'],
+                    datasets: [{
+                        label: 'Deformation Velocity (mm/day)',
+                        data: [1.2, 1.5, 1.4, 2.1, 3.5, 5.8, 9.2],
+                        borderColor: 'rgba(41, 121, 255, 1)',
+                        backgroundColor: 'rgba(41, 121, 255, 0.2)',
+                        fill: true,
+                        tension: 0.4,
+                        pointBackgroundColor: 'rgba(229, 230, 230, 1)'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { labels: { color: chartFontColor } } },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { color: chartFontColor },
+                            grid: { color: chartGridColor }
+                        },
+                        x: {
+                            ticks: { color: chartFontColor },
+                            grid: { color: chartGridColor }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Predictive Accuracy Chart
+        const accCtx = document.getElementById('accuracyChart');
+        if (accCtx) {
+            new Chart(accCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Event Prediction', 'False Alarm Rate'],
+                    datasets: [{
+                        label: 'Traditional',
+                        data: [65, 25],
+                        backgroundColor: 'rgba(255, 255, 255, 0.3)',
+                        borderColor: 'rgba(255, 255, 255, 0.5)',
+                        borderWidth: 1
+                    }, {
+                        label: 'Sentinel AI',
+                        data: [94, 4],
+                        backgroundColor: 'rgba(138, 58, 255, 0.7)',
+                        borderColor: 'rgba(138, 58, 255, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    plugins: { legend: { labels: { color: chartFontColor } } },
+                    scales: {
+                        y: { ticks: { color: chartFontColor }, grid: { color: chartGridColor } },
+                        x: { ticks: { color: chartFontColor, callback: (value) => value + '%' }, grid: { color: chartGridColor } }
+                    }
+                }
+            });
+        }
+    });
+    </script>
+</body>
+</html>
